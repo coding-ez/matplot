@@ -1,0 +1,69 @@
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import PorterStemmer
+from collections import defaultdict
+# Step 1: Preprocessing function for each document
+def preprocess_text(text):
+     stemmer = PorterStemmer()
+     stop_words = set(stopwords.words('english'))
+     words = word_tokenize(text, language='english')
+     return [stemmer.stem(word) for word in words if word.lower() not in stop_words and word.isalpha()]
+# Step 2: Function to build the inverted index
+def build_inverted_index(documents):
+     inverted_index = defaultdict(list) # Dictionary with a list of document IDs for each term
+
+     for doc_id, doc in enumerate(documents):
+     # Preprocess the document to get cleaned terms
+         processed_words = preprocess_text(doc)
+     # Update the inverted index: add doc_id to the list of documents for each word
+         for word in processed_words:
+             if doc_id not in inverted_index[word]:
+                 inverted_index[word].append(doc_id)
+
+     return inverted_index
+
+# Step 3: Function to retrieve documents based on query terms
+def retrieve_documents(query, inverted_index):
+ # Preprocess the query (similar to document preprocessing)
+     processed_query = preprocess_text(query)
+
+ # Find documents containing all query terms
+     relevant_docs = []
+     for word in processed_query:
+         if word in inverted_index:
+             relevant_docs.append(set(inverted_index[word]))
+         else:
+             return [] # If any word in the query isn't in the index, return no results
+
+ # Get the intersection of documents that contain all query words
+     result_docs = set.intersection(*relevant_docs)
+     return list(result_docs)
+# Step 4: Test the retrieval system with a sample set of documents and queries
+def main():
+ # Example set of documents (can be replaced by web-mined documents)
+     documents = [
+     "Information retrieval is the process of retrieving relevant information.",
+     "Web mining is used to extract useful information from web documents.",
+     "The goal of data mining is to discover patterns in large datasets.",
+     "Retrieving web documents efficiently is a major focus in search engines.",
+     "Information retrieval systems are essential for search engines and data mining."
+     ]
+
+     # Build the inverted index for the documents
+     inverted_index = build_inverted_index(documents)
+
+     # Example query
+     query = "retrieving information"
+
+     # Retrieve the documents matching the query
+     result_docs = retrieve_documents(query, inverted_index)
+
+ # Evaluate and print the retrieved documents
+     print(f"Query: '{query}'\n")
+     print("Documents retrieved:")
+     for doc_id in result_docs:
+         print(f"Document {doc_id}: {documents[doc_id]}")
+
+if __name__ == "__main__":
+  main()

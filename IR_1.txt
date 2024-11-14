@@ -1,0 +1,42 @@
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import PorterStemmer
+def preprocess_text(text):
+ """
+ Function to preprocess text by removing stopwords and applying
+stemming.
+
+ Parameters:
+ text (str): Input text to preprocess.
+ Returns:
+ str: Preprocessed text.
+ """
+ # Initialize the Porter Stemmer
+ stemmer = PorterStemmer()
+
+ # Define the stop words in English
+ stop_words = set(stopwords.words('english'))
+
+ # Tokenize the text
+ words = word_tokenize(text, language='english')
+
+ # Remove stop words and apply stemming
+ preprocessed_words = [stemmer.stem(word) for word in words if
+word.lower() not in stop_words and word.isalpha()]
+
+ # Join the processed words into a single string
+ return ' '.join(preprocessed_words)
+sample_text = """
+Information retrieval is the activity of obtaining information system
+resources that are relevant to an information need from a collection of those
+resources.
+Searches can be based on full-text or other content-based indexing.
+Web mining
+is a part of data mining techniques used to extract information from
+web documents.
+"""
+processed_text = preprocess_text(sample_text)
+# Evaluation and comparison
+print("Original Text:\n", sample_text)
+print("\nPreprocessed Text:\n", processed_text)

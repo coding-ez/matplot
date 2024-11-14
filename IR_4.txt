@@ -1,0 +1,44 @@
+import numpy as np
+
+def pagerank(graph, num_iterations: int = 100, d: float = 0.85):
+    """
+    Compute the PageRank of each node in the graph.
+    
+    Parameters:
+    - graph: A dictionary representing the adjacency list of the graph.
+    - num_iterations: Number of iterations to run.
+    - d: Damping factor.
+    
+    Returns:
+    - A dictionary with nodes as keys and their PageRank as values.
+    """
+    # Number of nodes
+    num_nodes = len(graph)
+    
+    # Initialize PageRank values
+    ranks = {node: 1.0 / num_nodes for node in graph}
+    
+    for _ in range(num_iterations):
+        new_ranks = {}
+        for node in graph:
+            rank_sum = 0.0
+            for neighbor in graph[node]:
+                rank_sum += ranks[neighbor] / len(graph[neighbor])
+            new_ranks[node] = (1 - d) / num_nodes + d * rank_sum
+        
+        # Update ranks
+        ranks = new_ranks
+
+    return ranks
+
+# Example graph (directed)
+graph = {
+    'A': ['B', 'C'],
+    'B': ['C'],
+    'C': ['A'],
+    'D': ['C'],
+    'E': ['D', 'B'],
+}
+
+page_rank_values = pagerank(graph)
+print("PageRank Values:", page_rank_values)

@@ -1,0 +1,29 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import AgglomerativeClustering
+
+# Load the Iris dataset
+iris = load_iris()
+X = iris.data
+y = iris.target
+
+# Standardize the dataset (scaling the data)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Perform Agglomerative Clustering
+agg_clustering = AgglomerativeClustering(n_clusters=3, linkage='ward')
+labels = agg_clustering.fit_predict(X_scaled)
+
+# Add labels to a DataFrame for easy plotting
+iris_df = pd.DataFrame(X_scaled, columns=iris.feature_names)
+iris_df['cluster'] = labels
+
+# Plot the clusters
+plt.figure(figsize=(10, 6))
+sns.scatterplot(data=iris_df, x='sepal length (cm)', y='sepal width (cm)', hue='cluster', palette='deep')
+plt.title('Agglomerative Hierarchical Clustering of Iris Data')
+plt.show()
